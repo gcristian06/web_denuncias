@@ -1,166 +1,11 @@
+/* Estilos generales */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+    background-color: #f5f5f5;
     color: #333;
-}
-
-.container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-header h1 {
-    color: #2c3e50;
-}
-
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn:hover {
-    opacity: 0.9;
-}
-
-#consultarBtn {
-    background-color: #3498db;
-    color: white;
-}
-
-#loginBtn {
-    background-color: #2ecc71;
-    color: white;
-}
-
-.denuncia {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.denuncia-anonima {
-    background-color: #f39c12;
-    color: white;
-}
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
-}
-
-.container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    position: relative;
-}
-
-/* Estilo para los botones superiores (derecha) */
-.header-buttons {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.header-button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.header-button:hover {
-    opacity: 0.9;
-}
-
-/* Botón "Consultar Denuncia" (gris oscuro) */
-#consultar-denuncia-btn {
-    background-color: #555;
-    color: white;
-}
-
-/* Botón "Iniciar Sesión" (azul marino) */
-#iniciar-sesion-btn {
-    background-color: #001f3f; /* Azul marino */
-    color: white;
-}
-
-/* Estilo para los botones principales */
-.buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.btn:hover {
-    opacity: 0.9;
-}
-
-/* Botón "Denuncia" (rojo) */
-.denuncia {
-    background-color: #e74c3c;
-    color: white;
-}
-
-/* Botón "Denuncia Anónima" (rojo más claro o diferente tono) */
-.denuncia-anonima {
-    background-color: #c0392b;
-    color: white;
-}
-
-/* Botón "Descargar App" (púrpura para diferenciar) */
-.descarga {
-    background-color: #9b59b6;
-    color: white;
-    text-decoration: none;
-    display: inline-block;
-    padding: 12px 20px;
-    border-radius: 5px;
-    margin-top: 15px;
-}
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
+    line-height: 1.6;
 }
 
 .container {
@@ -168,49 +13,56 @@ body {
     margin: 20px auto;
     padding: 20px;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.form-group {
+/* Estilos para la página principal */
+.header-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
+.header-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-input[type="text"],
-input[type="tel"],
-select,
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+#consultar-denuncia-btn {
+    background-color: #555;
+    color: white;
 }
 
-textarea {
-    resize: vertical;
+#iniciar-sesion-btn {
+    background-color: #001f3f;
+    color: white;
 }
 
-input[type="file"] {
-    padding: 5px;
+header h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2.2em;
 }
 
-.button-group {
+.buttons {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 20px;
     margin-top: 30px;
+}
+
+.buttons p {
+    text-align: center;
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: -10px;
 }
 
 .btn {
@@ -219,11 +71,91 @@ input[type="file"] {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    transition: opacity 0.3s;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn:hover {
-    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.denuncia {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.denuncia-anonima {
+    background-color: #c0392b;
+    color: white;
+}
+
+.descarga {
+    background-color: #9b59b6;
+    color: white;
+    margin-top: 30px;
+}
+
+/* Estilos para el formulario de denuncia */
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+input[type="text"],
+input[type="tel"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border 0.3s ease;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
 }
 
 .btn-rojo {
@@ -234,4 +166,28 @@ input[type="file"] {
 .btn-gris {
     background-color: #555;
     color: white;
+}
+
+/* Efectos hover para botones */
+.header-button:hover,
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn {
+        width: 100%;
+    }
 }
