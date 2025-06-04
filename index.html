@@ -109,14 +109,19 @@
     <!-- Firebase SDKs for Realtime Database and Auth -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref, get, set, update, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // Variables globales de Firebase (proporcionadas por el entorno Canvas)
-        // Es crucial usar estas variables si la aplicación se ejecuta en Canvas.
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Configuración de Firebase - usando tu configuración real
+        const firebaseConfig = {
+            apiKey: "AIzaSyCE5Y9P5iOs1CsTfWqtdd9dHGkP4iW2NSU",
+            authDomain: "complaints-9052c.firebaseapp.com",
+            databaseURL: "https://complaints-9052c-default-rtdb.firebaseio.com",
+            projectId: "complaints-9052c",
+            storageBucket: "complaints-9052c.firebasestorage.app",
+            messagingSenderId: "349621042973",
+            appId: "1:349621042973:web:5510151c1d578b27c26bf4"
+        };
 
         let app;
         let db; // Instancia de Realtime Database
@@ -149,16 +154,16 @@
         // Inicializar Firebase y configurar la autenticación
         async function initFirebase() {
             try {
+                console.log("Inicializando Firebase...");
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getDatabase(app); // Inicializar Realtime Database
 
-                // Iniciar sesión con token personalizado si está disponible, de lo contrario anónimamente
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                console.log("Firebase inicializado correctamente");
+
+                // Iniciar sesión anónimamente
+                await signInAnonymously(auth);
+                console.log("Sesión anónima iniciada");
 
                 // Escuchar cambios en el estado de autenticación
                 onAuthStateChanged(auth, (user) => {
@@ -175,13 +180,12 @@
 
             } catch (error) {
                 console.error("Error al inicializar Firebase:", error);
-                window.showMessageBox("Error al inicializar Firebase. Consulta la consola para más detalles.");
+                window.showMessageBox("Error al inicializar Firebase: " + error.message);
                 disableAppInteractions(); // Deshabilita interacciones si Firebase falla
             }
         }
 
         // Hacer que las instancias y funciones de Firebase estén disponibles globalmente
-        // Esto es crucial para que otros scripts (como trabajador_social.html) puedan usarlas.
         window.db = db;
         window.auth = auth;
         window.userId = userId;
@@ -194,33 +198,35 @@
         window.child = child;
 
         // Inicializar Firebase cuando la página se carga
-        window.onload = initFirebase;
+        document.addEventListener('DOMContentLoaded', initFirebase);
 
         // Referencias a botones de la interfaz
-        const consultarDenunciaBtn = document.getElementById('consultar-denuncia-btn');
-        const iniciarSesionBtn = document.getElementById('iniciar-sesion-btn');
-        const denunciaAquiAnonimaBtn = document.getElementById('denuncia-aqui-anonima-btn');
-        const agitaCelularBtn = document.getElementById('agita-celular-btn'); // Asumiendo que este es el botón "Denuncia aquí" inferior
+        document.addEventListener('DOMContentLoaded', () => {
+            const consultarDenunciaBtn = document.getElementById('consultar-denuncia-btn');
+            const iniciarSesionBtn = document.getElementById('iniciar-sesion-btn');
+            const denunciaBtn = document.getElementById('denuncia-btn');
+            const denunciaAnonimaBtn = document.getElementById('denuncia-anonima-btn');
 
-        // Event Listeners
-        consultarDenunciaBtn.addEventListener('click', () => {
-            // Redirigir a la página de seguimiento de denuncias
-            window.location.href = 'trabajador_social.html';
-        });
+            // Event Listeners
+            consultarDenunciaBtn.addEventListener('click', () => {
+                // Redirigir a la página de seguimiento de denuncias
+                window.location.href = 'trabajador_social.html';
+            });
 
-        iniciarSesionBtn.addEventListener('click', () => {
-            // Redirigir a la página de inicio de sesión (si tienes una, como login.html)
-            window.location.href = 'login.html'; // O la URL de tu página de login
-        });
+            iniciarSesionBtn.addEventListener('click', () => {
+                // Redirigir a la página de inicio de sesión
+                window.location.href = 'login.html';
+            });
 
-        denunciaAquiAnonimaBtn.addEventListener('click', () => {
-            window.showMessageBox("Funcionalidad de Denuncia anónima aún no implementada.");
-            // Aquí iría la lógica para iniciar una denuncia anónima
-        });
+            denunciaBtn.addEventListener('click', () => {
+                // Redirigir a la página de denuncia normal
+                window.location.href = 'denuncia.html';
+            });
 
-        agitaCelularBtn.addEventListener('click', () => {
-            window.showMessageBox("Funcionalidad de Llamar a Emergencias aún no implementada.");
-            // Aquí iría la lógica para activar llamadas de emergencia
+            denunciaAnonimaBtn.addEventListener('click', () => {
+                // Redirigir a la página de denuncia anónima
+                window.location.href = 'denuncia_anonima.html';
+            });
         });
 
     </script>
@@ -234,12 +240,12 @@
     <div class="main-container">
         <h1 class="hero-title">¡Bienvenido(a)!</h1>
 
-        <button class="action-button">Denuncia aquí</button>
+        <p class="text-gray-700 text-lg mb-4">Realiza tu denuncia registrada</p>
+        <button id="denuncia-btn" class="action-button">Denuncia aquí</button>
+
         <p class="text-gray-700 text-lg mb-4">Realiza tu denuncia de forma anónima</p>
-        <button id="denuncia-aqui-anonima-btn" class="action-button">Denuncia aquí</button>
-        <p class="text-gray-700 text-lg">Agita tu celular para llamar a Emergencias</p>
-        <button id="agita-celular-btn" class="action-button mt-4">Denuncia aquí</button>
-    </div>
+        <button id="denuncia-anonima-btn" class="action-button">Denuncia Anónima</button>
+
 
     <!-- Contenedor para el mensaje flotante (simulando alert) -->
     <div id="message-box" class="message-box">
