@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Denuncia</title>
-    <!-- Leaflet CSS para el mapa -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -26,13 +24,6 @@
             color: #333;
             text-align: center;
             margin-bottom: 30px;
-        }
-        #map {
-            height: 300px;
-            width: 100%;
-            margin-top: 20px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
         }
         .denuncia-info {
             margin: 20px 0;
@@ -136,14 +127,11 @@
                 <div class="info-item"><strong>Tipo de denuncia:</strong> <span id="info-tipo"></span></div>
                 <div class="info-item"><strong>Detalles:</strong> <span id="info-detalles"></span></div>
                 <div class="info-item"><strong>Fecha y hora:</strong> <span id="info-fecha"></span></div>
-                <div class="info-item"><strong>Ubicación:</strong> <span id="info-ubicacion"></span></div>
                 
-                <!-- Nuevos campos agregados -->
+                <!-- Campos de seguimiento -->
                 <div class="info-item"><strong>Estado:</strong> <span id="info-estado"></span></div>
                 <div class="info-item"><strong>Profesional asignado:</strong> <span id="info-profesional"></span></div>
                 <div class="info-item"><strong>Observaciones:</strong> <span id="info-observaciones"></span></div>
-                
-                <div id="map"></div>
             </div>
         </div>
         
@@ -154,8 +142,6 @@
         <button id="btnRegresar" class="btn">Regresar</button>
     </div>
 
-    <!-- Leaflet JS para el mapa -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
@@ -175,9 +161,6 @@
         const database = firebase.database();
         
         document.addEventListener('DOMContentLoaded', function() {
-            let map = null;
-            let marker = null;
-            
             // Manejar el botón de regresar
             document.getElementById('btnRegresar').addEventListener('click', function() {
                 if (window.history.length > 1) {
@@ -229,9 +212,8 @@
                         document.getElementById('info-tipo').textContent = denuncia.tipo || 'No especificado';
                         document.getElementById('info-detalles').textContent = denuncia.detalles || 'No hay detalles adicionales';
                         document.getElementById('info-fecha').textContent = denuncia.dateTime || 'Fecha no disponible';
-                        document.getElementById('info-ubicacion').textContent = denuncia.ubicacion || 'Ubicación no disponible';
                         
-                        // Mostrar los nuevos campos
+                        // Mostrar los campos de seguimiento
                         const estadoElement = document.getElementById('info-estado');
                         estadoElement.textContent = denuncia.estado || 'No asignado';
                         estadoElement.className = getStatusClass(denuncia.estado || '');
@@ -239,41 +221,11 @@
                         document.getElementById('info-profesional').textContent = denuncia.profesional_asignado || 'No asignado';
                         document.getElementById('info-observaciones').textContent = denuncia.observaciones || 'No hay observaciones';
                         
-                        // Mostrar el mapa si hay ubicación
-                        if (denuncia.latitud && denuncia.latitud !== "No disponible" && 
-                            denuncia.longitud && denuncia.longitud !== "No disponible") {
-                            if (!map) {
-                                map = L.map('map').setView([denuncia.latitud, denuncia.longitud], 15);
-                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                }).addTo(map);
-                            } else {
-                                map.setView([denuncia.latitud, denuncia.longitud], 15);
-                            }
-                            
-                            if (marker) {
-                                map.removeLayer(marker);
-                            }
-                            
-                            marker = L.marker([denuncia.latitud, denuncia.longitud]).addTo(map)
-                                .bindPopup('Ubicación de la denuncia');
-                        } else {
-                            if (map) {
-                                map.remove();
-                                map = null;
-                            }
-                            document.getElementById('map').style.display = 'none';
-                        }
-                        
                         document.getElementById('resultado').style.display = 'block';
                         document.getElementById('mensaje-error').style.display = 'none';
                     } else {
                         document.getElementById('resultado').style.display = 'none';
                         document.getElementById('mensaje-error').style.display = 'block';
-                        if (map) {
-                            map.remove();
-                            map = null;
-                        }
                     }
                 }).catch((error) => {
                     console.error('Error al consultar denuncia:', error);
