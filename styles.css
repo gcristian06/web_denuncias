@@ -55,8 +55,8 @@ body {
 .buttons {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
+    gap: 20px;
+    margin-top: 10px;
 }
 
 .btn {
