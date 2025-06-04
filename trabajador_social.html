@@ -300,7 +300,7 @@
                         
                         // Configurar los campos editables
                         document.getElementById('edit-estado').value = denuncia.estado || 'pendiente';
-                        document.getElementById('edit-profesional').value = denuncia.profesional_asignado || '';
+                        document.getElementById('edit-profesional').value = denuncia.profesional || '';
                         document.getElementById('edit-observaciones').value = denuncia.observaciones || '';
                         
                         // Mostrar el mapa si hay ubicación
@@ -359,7 +359,7 @@
                 
                 const updates = {
                     estado: estado,
-                    profesional_asignado: profesional,
+                    profesional: profesional,
                     observaciones: observaciones
                 };
                 
