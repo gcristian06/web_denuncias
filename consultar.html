@@ -100,6 +100,22 @@
         .info-item {
             margin-bottom: 10px;
         }
+        .status-pending {
+            color: #FF9800;
+            font-weight: bold;
+        }
+        .status-in-progress {
+            color: #2196F3;
+            font-weight: bold;
+        }
+        .status-resolved {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .status-rejected {
+            color: #F44336;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -121,6 +137,11 @@
                 <div class="info-item"><strong>Detalles:</strong> <span id="info-detalles"></span></div>
                 <div class="info-item"><strong>Fecha y hora:</strong> <span id="info-fecha"></span></div>
                 <div class="info-item"><strong>Ubicación:</strong> <span id="info-ubicacion"></span></div>
+                
+                <!-- Nuevos campos agregados -->
+                <div class="info-item"><strong>Estado:</strong> <span id="info-estado"></span></div>
+                <div class="info-item"><strong>Profesional asignado:</strong> <span id="info-profesional"></span></div>
+                <div class="info-item"><strong>Observaciones:</strong> <span id="info-observaciones"></span></div>
                 
                 <div id="map"></div>
             </div>
@@ -157,14 +178,12 @@
             let map = null;
             let marker = null;
             
-            // Manejar el botón de regresar - VERSIÓN MEJORADA
+            // Manejar el botón de regresar
             document.getElementById('btnRegresar').addEventListener('click', function() {
-                // Intentar regresar en el historial
                 if (window.history.length > 1) {
                     window.history.back();
                 } else {
-                    // Si no hay historial, redirigir a la página principal
-                    window.location.href = 'index.html'; // Cambia esto por tu página principal
+                    window.location.href = 'index.html';
                 }
             });
             
@@ -177,6 +196,16 @@
                     consultarDenuncia();
                 }
             });
+            
+            function getStatusClass(status) {
+                const statusClasses = {
+                    'pendiente': 'status-pending',
+                    'en progreso': 'status-in-progress',
+                    'resuelta': 'status-resolved',
+                    'rechazada': 'status-rejected'
+                };
+                return statusClasses[status.toLowerCase()] || '';
+            }
             
             function consultarDenuncia() {
                 const codigo = document.getElementById('codigoDenuncia').value.trim();
@@ -192,7 +221,7 @@
                     const denuncia = snapshot.val();
                     
                     if (denuncia) {
-                        // Mostrar información
+                        // Mostrar información básica
                         document.getElementById('info-nombre').textContent = denuncia.nombre || 'No proporcionado';
                         document.getElementById('info-apellidos').textContent = 
                             `${denuncia.apellido_paterno || ''} ${denuncia.apellido_materno || ''}`.trim() || 'No proporcionado';
@@ -201,6 +230,14 @@
                         document.getElementById('info-detalles').textContent = denuncia.detalles || 'No hay detalles adicionales';
                         document.getElementById('info-fecha').textContent = denuncia.dateTime || 'Fecha no disponible';
                         document.getElementById('info-ubicacion').textContent = denuncia.ubicacion || 'Ubicación no disponible';
+                        
+                        // Mostrar los nuevos campos
+                        const estadoElement = document.getElementById('info-estado');
+                        estadoElement.textContent = denuncia.estado || 'No asignado';
+                        estadoElement.className = getStatusClass(denuncia.estado || '');
+                        
+                        document.getElementById('info-profesional').textContent = denuncia.profesional_asignado || 'No asignado';
+                        document.getElementById('info-observaciones').textContent = denuncia.observaciones || 'No hay observaciones';
                         
                         // Mostrar el mapa si hay ubicación
                         if (denuncia.latitud && denuncia.latitud !== "No disponible" && 
