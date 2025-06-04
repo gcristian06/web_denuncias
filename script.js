@@ -8,7 +8,7 @@ document.getElementById("loginBtn").addEventListener("click", function() {
 });
 
 document.getElementById("denunciaBtn").addEventListener("click", function() {
-    alert("Formulario de DENUNCIA en desarrollo.");
+    window.location.href = "denuncia.html";
 });
 
 document.getElementById("denunciaAnonimaBtn").addEventListener("click", function() {
