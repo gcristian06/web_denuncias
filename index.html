@@ -19,7 +19,7 @@
 
         <div class="buttons">
             <p>Realiza tu denuncia aquí</p>
-            <button href=denuncias.html id="denunciaBtn" class="btn denuncia">Denuncia aquí</button>
+            <button id="denunciaBtn" class="btn denuncia">Denuncia aquí</button>
             
             <p>O si prefieres, denuncia de forma anónima</p>
             <button id="denunciaAnonimaBtn" class="btn denuncia-anonima">Denuncia aquí</button>
@@ -29,7 +29,24 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.getElementById("consultarBtn").addEventListener("click", function() {
+            alert("Función de CONSULTAR en desarrollo.");
+        });
+        
+        document.getElementById("loginBtn").addEventListener("click", function() {
+            alert("Redirigiendo a LOGIN...");
+            // window.location.href = "login.html";  // Si tienes una página de login
+        });
+        
+        document.getElementById("denunciaBtn").addEventListener("click", function() {
+            window.location.href = "denuncia.html";
+        });
+        
+        document.getElementById("denunciaAnonimaBtn").addEventListener("click", function() {
+            alert("Formulario de DENUNCIA ANÓNIMA en desarrollo.");
+        });
+    </script>
 </body>
 </html>
 
