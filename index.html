@@ -19,34 +19,16 @@
 
         <div class="buttons">
             <p>Realiza tu denuncia aquí</p>
-            <button id="denunciaBtn" class="btn denuncia">Denuncia aquí</button>
+            <button href=denuncia.html class="btn denuncia">Denuncia aquí</button>
             
             <p>O si prefieres, denuncia de forma anónima</p>
-            <button id="denunciaAnonimaBtn" class="btn denuncia-anonima">Denuncia aquí</button>
+            <a href=denuncia_anonima.html class="btn denuncia-anonima">Denuncia aquí</a>
             
             <!-- Nuevo botón de descarga APK -->
             <a href="https://drive.google.com/file/d/1o-Iaak1GZnqC59vpBEBl6XrH020bXttc/view?usp=drive_link" download class="btn descarga">Descargar APK</a>
         </div>
     </div>
-
-    <script>
-        document.getElementById("consultarBtn").addEventListener("click", function() {
-            alert("Función de CONSULTAR en desarrollo.");
-        });
-        
-        document.getElementById("loginBtn").addEventListener("click", function() {
-            alert("Redirigiendo a LOGIN...");
-            // window.location.href = "login.html";  // Si tienes una página de login
-        });
-        
-        document.getElementById("denunciaBtn").addEventListener("click", function() {
-            window.location.href = "denuncia.html";
-        });
-        
-        document.getElementById("denunciaAnonimaBtn").addEventListener("click", function() {
-            alert("Formulario de DENUNCIA ANÓNIMA en desarrollo.");
-        });
-    </script>
+    
 </body>
 </html>
 
