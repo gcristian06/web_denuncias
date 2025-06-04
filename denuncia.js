@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
             detalles: detalles,
             dateTime: dateTime,
             ubicacion: latitud && longitud ? `${latitud},${longitud}` : "No disponible",
-            latitud: latitud,
-            latitud: latitud,
+            latitud: latitud  ? `${latitud}` : "No disponible",
+            latitud: latitud  ? `${longitud}` : "No disponible",
         };
         
         // Subir datos a Firebase
