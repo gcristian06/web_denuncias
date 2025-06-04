@@ -87,7 +87,6 @@
         <button id="btnLogin">Ingresar</button>
         <div id="error-message" class="error-message"></div>
         <div id="success-message" class="success-message"></div>
-        <button onclick="window.location.href='index.html'" id="btnLogout">Regresar</button>
     </div>
 
     <!-- Firebase -->
@@ -119,8 +118,8 @@
         // Escuchar cambios en el estado de autenticación
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Usuario autenticado, redirigir a consultar.html
-                window.location.href = 'consultar.html';
+                // Usuario autenticado
+                window.location.href = 'trabajador_social.html';
             }
         });
 
