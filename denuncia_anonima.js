@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Generar ID único para la denuncia
-        const denunciaId = 'denuncia' + now.getTime();
+        const denunciaId = 'denuncia_anonima' + now.getTime();
         
         // Crear objeto con los datos de la denuncia
         const denunciaData = {
