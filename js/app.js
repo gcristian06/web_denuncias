@@ -1,7 +1,7 @@
 // Configuración de Firebase (Reemplaza con tus datos)
 const firebaseConfig = {
     apiKey: "AIzaSyCE5Y9P5iOs1CsTfWqtdd9dHGkP4iW2NSU",
-    authDomain: "https://complaints-9052c-default-rtdb.firebaseio.com",
+    authDomain: "https://complaints-9052c-default-rtdb.firebaseio.com/",
     projectId: "complaints-9052c",
     storageBucket: "complaints-9052c.firebasestorage.app",
     messagingSenderId: "349621042973",
