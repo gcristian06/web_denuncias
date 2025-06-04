@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realizar Denuncia - App Denuncias</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para la fuente Inter y el cuerpo de la página */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Un gris claro para el fondo */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alineado al inicio para permitir scroll */
+            min-height: 100vh; /* Asegura que ocupe al menos toda la altura de la ventana */
+            margin: 0;
+            padding: 1rem; /* Espacio alrededor del contenedor principal */
+            box-sizing: border-box; /* Incluye padding en el ancho/alto */
+        }
+        .container {
+            background-color: white;
+            border-radius: 1rem; /* Esquinas redondeadas */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            padding: 2rem;
+            width: 100%;
+            max-width: 700px; /* Ancho máximo para la interfaz */
+            text-align: center;
+            margin-top: 2rem; /* Margen superior para centrar verticalmente si hay poco contenido */
+            margin-bottom: 2rem; /* Margen inferior para permitir scroll */
+        }
+        .header-title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 1.5rem;
+        }
+        .input-field, .select-field, .textarea-field {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        .textarea-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .button-primary {
+            background-color: #ef4444; /* Rojo */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .button-primary:hover {
+            background-color: #dc2626;
+        }
+        .button-secondary {
+            background-color: #6b7280; /* Gris */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .button-secondary:hover {
+            background-color: #4b5563;
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            z-index: 1000;
+            display: none; /* Oculto por defecto */
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        .message-box.show {
+            display: block;
+        }
+        .message-box button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .message-box button:hover {
+            background-color: #2563eb;
+        }
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <!-- Firebase SDKs for Realtime Database and Auth -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, get, set, update, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // Configuración de Firebase - usando tu configuración real
+        const firebaseConfig = {
+            apiKey: "AIzaSyCE5Y9P5iOs1CsTfWqtdd9dHGkP4iW2NSU",
+            authDomain: "complaints-9052c.firebaseapp.com",
+            databaseURL: "https://complaints-9052c-default-rtdb.firebaseio.com",
+            projectId: "complaints-9052c",
+            storageBucket: "complaints-9052c.firebasestorage.app",
+            messagingSenderId: "349621042973",
+            appId: "1:349621042973:web:5510151c1d578b27c26bf4"
+        };
+
+        let app;
+        let db; // Instancia de Realtime Database
+        let auth;
+        let userId = 'anonymous'; // Valor predeterminado
+        let isAuthReady = false;
+
+        // Función para mostrar un mensaje emergente (modal)
+        window.showMessageBox = function(message) {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const messageOkButton = document.getElementById('message-ok-button');
+
+            messageText.textContent = message;
+            messageBox.classList.add('show');
+
+            messageOkButton.onclick = () => {
+                messageBox.classList.remove('show');
+            };
+        };
+
+        // Función para deshabilitar las interacciones de la aplicación
+        function disableAppInteractions() {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            document.querySelectorAll('input').forEach(input => input.disabled = true);
+            document.querySelectorAll('select').forEach(select => select.disabled = true);
+            document.querySelectorAll('textarea').forEach(textarea => textarea.disabled = true);
+        }
+
+        // Inicializar Firebase y configurar la autenticación
+        async function initFirebase() {
+            try {
+                console.log("Inicializando Firebase...");
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getDatabase(app); // Inicializar Realtime Database
+
+                console.log("Firebase inicializado correctamente");
+
+                // Iniciar sesión anónimamente
+                await signInAnonymously(auth);
+                console.log("Sesión anónima iniciada");
+
+                // Escuchar cambios en el estado de autenticación
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase: Usuario autenticado:", userId);
+                    } else {
+                        userId = crypto.randomUUID(); // Usar un ID aleatorio para usuarios no autenticados
+                        console.log("Firebase: Usuario anónimo o desconectado:", userId);
+                    }
+                    isAuthReady = true; // La autenticación está lista
+                });
+
+            } catch (error) {
+                console.error("Error al inicializar Firebase:", error);
+                window.showMessageBox("Error al inicializar Firebase: " + error.message);
+                disableAppInteractions(); // Deshabilita interacciones si Firebase falla
+            }
+        }
+
+        // Global variables for App Inventor logic simulation
+        let global_imagen = ''; // To store Base64 image data
+
+        // Inicializar Firebase cuando la página se carga
+        document.addEventListener('DOMContentLoaded', () => {
+            initFirebase();
+
+            // Referencias a elementos del DOM
+            const inputNombre = document.getElementById('input-nombre');
+            const inputTelefono = document.getElementById('input-telefono');
+            const inputUbicacion = document.getElementById('input-ubicacion');
+            const selectTipoDenuncia = document.getElementById('select-tipo-denuncia');
+            const textareaDetalles = document.getElementById('textarea-detalles');
+            const inputImagen = document.getElementById('input-imagen');
+            const imagePreview = document.getElementById('image-preview');
+            const btnGuardarDenuncia = document.getElementById('btn-guardar-denuncia');
+            const btnCancelar = document.getElementById('btn-cancelar');
+
+            // Event listener para la carga de imagen
+            inputImagen.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        global_imagen = e.target.result; // Almacenar la imagen en Base64
+                        imagePreview.src = global_imagen;
+                        imagePreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    global_imagen = '';
+                    imagePreview.src = '#';
+                    imagePreview.classList.add('hidden');
+                }
+            });
+
+            // Cuando boton_guardar_denuncia.Clic
+            btnGuardarDenuncia.addEventListener('click', async () => {
+                if (!isAuthReady || !db) {
+                    window.showMessageBox("La aplicación no está lista o la base de datos no está inicializada.");
+                    return;
+                }
+
+                const nombre = inputNombre.value.trim();
+                const telefono = inputTelefono.value.trim();
+                const ubicacion = inputUbicacion.value.trim();
+                const tipoDenuncia = selectTipoDenuncia.value;
+                const detalles = textareaDetalles.value.trim();
+
+                if (!nombre || !telefono || !ubicacion || !tipoDenuncia || !detalles) {
+                    window.showMessageBox("Por favor, completa todos los campos obligatorios.");
+                    return;
+                }
+
+                // Generar un ID de denuncia simple
+                const complaintId = `COMP-${Date.now()}`; // Ejemplo de ID único
+
+                try {
+                    const denunciaData = {
+                        complaintId: complaintId,
+                        nombre: nombre,
+                        telefono: telefono,
+                        ubicacion: ubicacion,
+                        tipo: tipoDenuncia,
+                        detalles: detalles,
+                        imagen: global_imagen, // La imagen en Base64
+                        dateTime: new Date().toISOString(),
+                        estado: 'recibida' // Estado inicial
+                    };
+
+                    // Guardar en Realtime Database bajo la rama 'denuncias'
+                    await set(ref(db, `denuncias/${complaintId}`), denunciaData);
+
+                    window.showMessageBox(`Denuncia guardada con éxito. ID: ${complaintId}`);
+                    console.log("Denuncia guardada:", denunciaData);
+
+                    // Limpiar formulario después de guardar
+                    inputNombre.value = '';
+                    inputTelefono.value = '';
+                    inputUbicacion.value = '';
+                    selectTipoDenuncia.value = '';
+                    textareaDetalles.value = '';
+                    inputImagen.value = ''; // Limpiar el input de archivo
+                    imagePreview.src = '#';
+                    imagePreview.classList.add('hidden');
+                    global_imagen = '';
+
+                } catch (error) {
+                    console.error("Error al guardar la denuncia:", error);
+                    window.showMessageBox("Error al guardar la denuncia: " + error.message);
+                }
+            });
+
+            // Cuando boton_cancelar.Clic
+            btnCancelar.addEventListener('click', () => {
+                window.location.href = 'index.html'; // Volver a la pantalla principal
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header-title">Realizar Denuncia</h1>
+
+        <!-- Campos del formulario -->
+        <div class="form-section text-left">
+            <p class="text-gray-700 font-semibold mb-2">Nombre Completo:</p>
+            <input type="text" id="input-nombre" class="input-field" placeholder="Tu nombre">
+
+            <p class="text-gray-700 font-semibold mb-2">Número de Teléfono:</p>
+            <input type="text" id="input-telefono" class="input-field" placeholder="Tu teléfono">
+
+            <p class="text-gray-700 font-semibold mb-2">Ubicación (Descripción):</p>
+            <input type="text" id="input-ubicacion" class="input-field" placeholder="Ej. Calle, número, colonia">
+
+            <p class="text-gray-700 font-semibold mb-2">Tipo de Denuncia:</p>
+            <select id="select-tipo-denuncia" class="select-field">
+                <option value="">Selecciona un tipo...</option>
+                <option value="robo">Robo</option>
+                <option value="violencia">Violencia</option>
+                <option value="vandalismo">Vandalismo</option>
+                <option value="otro">Otro</option>
+            </select>
+
+            <p class="text-gray-700 font-semibold mb-2">Detalles de la Denuncia:</p>
+            <textarea id="textarea-detalles" class="textarea-field" placeholder="Describe lo sucedido..."></textarea>
+
+            <p class="text-gray-700 font-semibold mb-2">Adjuntar Imagen (Opcional):</p>
+            <input type="file" id="input-imagen" accept="image/*" class="input-field">
+            <img id="image-preview" class="image-preview hidden" src="#" alt="Vista previa de la imagen">
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex flex-col md:flex-row gap-4 mt-6">
+            <button id="btn-guardar-denuncia" class="button-primary">Guardar Denuncia</button>
+            <button id="btn-cancelar" class="button-secondary">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Contenedor para el mensaje flotante (simulando alert) -->
+    <div id="message-box" class="message-box">
+        <p id="message-text"></p>
+        <button id="message-ok-button">OK</button>
+    </div>
+</body>
+</html>
