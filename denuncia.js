@@ -59,7 +59,9 @@ document.addEventListener('DOMContentLoaded', function() {
             tipo: tipoDenuncia,
             detalles: detalles,
             dateTime: dateTime,
-            ubicacion: latitud && longitud ? `${latitud}_${longitud}` : "No disponible"
+            ubicacion: latitud && longitud ? `${latitud},${longitud}` : "No disponible",
+            latitud: latitud,
+            latitud: latitud,
         };
         
         // Subir datos a Firebase
