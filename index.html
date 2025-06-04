@@ -3,254 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Denuncias</title>
-    <!-- Carga de Tailwind CSS para estilos modernos y responsivos -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Estilos personalizados para la fuente Inter y el cuerpo de la página */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5; /* Un gris claro para el fondo */
-            display: flex;
-            flex-direction: column; /* Para organizar elementos verticalmente */
-            justify-content: flex-start; /* Alinear al inicio */
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem;
-            box-sizing: border-box;
-        }
-        .main-container {
-            background-color: #ffffff;
-            border-radius: 1rem; /* Bordes redondeados */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 600px; /* Ancho máximo para el contenido principal */
-            text-align: center;
-            margin-top: 2rem;
-        }
-        .header-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end; /* Alinear a la derecha */
-            width: 100%;
-            max-width: 600px; /* Coincide con el ancho del contenedor principal */
-            margin-bottom: 1rem;
-        }
-        .header-button {
-            background-color: #3b82f6; /* Azul */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            transition: background-color 0.2s ease-in-out;
-            border: none;
-            cursor: pointer;
-        }
-        .header-button:hover {
-            background-color: #2563eb; /* Azul más oscuro */
-        }
-        .hero-title {
-            font-size: 2.5rem; /* text-5xl */
-            font-weight: 800; /* font-extrabold */
-            color: #1f2937; /* gray-800 */
-            margin-bottom: 2rem;
-        }
-        .action-button {
-            background-color: #ef4444; /* Rojo */
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            font-size: 1.25rem;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 1.5rem;
-        }
-        .action-button:hover {
-            background-color: #dc2626; /* Rojo más oscuro */
-            transform: translateY(-2px);
-        }
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 1.5rem 2rem;
-            border-radius: 0.75rem;
-            z-index: 1000;
-            display: none; /* Oculto por defecto */
-            text-align: center;
-            font-size: 1.1rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-        .message-box.show {
-            display: block;
-        }
-        .message-box button {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
-        }
-        .message-box button:hover {
-            background-color: #2563eb;
-        }
-    </style>
-    <!-- Firebase SDKs for Realtime Database and Auth -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, get, set, update, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
-        // Configuración de Firebase - usando tu configuración real
-        const firebaseConfig = {
-            apiKey: "AIzaSyCE5Y9P5iOs1CsTfWqtdd9dHGkP4iW2NSU",
-            authDomain: "complaints-9052c.firebaseapp.com",
-            databaseURL: "https://complaints-9052c-default-rtdb.firebaseio.com",
-            projectId: "complaints-9052c",
-            storageBucket: "complaints-9052c.firebasestorage.app",
-            messagingSenderId: "349621042973",
-            appId: "1:349621042973:web:5510151c1d578b27c26bf4"
-        };
-
-        let app;
-        let db; // Instancia de Realtime Database
-        let auth;
-        let userId = 'anonymous'; // Valor predeterminado
-        let isAuthReady = false;
-
-        // Función para mostrar un mensaje emergente (modal)
-        window.showMessageBox = function(message) {
-            const messageBox = document.getElementById('message-box');
-            const messageText = document.getElementById('message-text');
-            const messageOkButton = document.getElementById('message-ok-button');
-
-            messageText.textContent = message;
-            messageBox.classList.add('show');
-
-            messageOkButton.onclick = () => {
-                messageBox.classList.remove('show');
-            };
-        };
-
-        // Función para deshabilitar interacciones de la UI si Firebase falla
-        function disableAppInteractions() {
-            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
-            document.querySelectorAll('input').forEach(input => input.disabled = true);
-            document.querySelectorAll('select').forEach(select => select.disabled = true);
-            document.querySelectorAll('textarea').forEach(textarea => textarea.disabled = true);
-        }
-
-        // Inicializar Firebase y configurar la autenticación
-        async function initFirebase() {
-            try {
-                console.log("Inicializando Firebase...");
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getDatabase(app); // Inicializar Realtime Database
-
-                console.log("Firebase inicializado correctamente");
-
-                // Iniciar sesión anónimamente
-                await signInAnonymously(auth);
-                console.log("Sesión anónima iniciada");
-
-                // Escuchar cambios en el estado de autenticación
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        console.log("Firebase: Usuario autenticado:", userId);
-                    } else {
-                        // Si no hay usuario, usar un ID aleatorio para usuarios no autenticados
-                        userId = crypto.randomUUID();
-                        console.log("Firebase: Usuario anónimo o desconectado:", userId);
-                    }
-                    isAuthReady = true; // La autenticación está lista
-                });
-
-            } catch (error) {
-                console.error("Error al inicializar Firebase:", error);
-                window.showMessageBox("Error al inicializar Firebase: " + error.message);
-                disableAppInteractions(); // Deshabilita interacciones si Firebase falla
-            }
-        }
-
-        // Hacer que las instancias y funciones de Firebase estén disponibles globalmente
-        window.db = db;
-        window.auth = auth;
-        window.userId = userId;
-        window.isAuthReady = isAuthReady;
-        window.getDatabase = getDatabase;
-        window.ref = ref;
-        window.get = get;
-        window.set = set;
-        window.update = update;
-        window.child = child;
-
-        // Inicializar Firebase cuando la página se carga
-        document.addEventListener('DOMContentLoaded', initFirebase);
-
-        // Referencias a botones de la interfaz
-        document.addEventListener('DOMContentLoaded', () => {
-            const consultarDenunciaBtn = document.getElementById('consultar-denuncia-btn');
-            const iniciarSesionBtn = document.getElementById('iniciar-sesion-btn');
-            const denunciaBtn = document.getElementById('denuncia-btn');
-            const denunciaAnonimaBtn = document.getElementById('denuncia-anonima-btn');
-
-            // Event Listeners
-            consultarDenunciaBtn.addEventListener('click', () => {
-                // Redirigir a la página de seguimiento de denuncias
-                window.location.href = 'trabajador_social.html';
-            });
-
-            iniciarSesionBtn.addEventListener('click', () => {
-                // Redirigir a la página de inicio de sesión
-                window.location.href = 'login.html';
-            });
-
-            denunciaBtn.addEventListener('click', () => {
-                // Redirigir a la página de denuncia normal
-                window.location.href = 'denuncia.html';
-            });
-
-            denunciaAnonimaBtn.addEventListener('click', () => {
-                // Redirigir a la página de denuncia anónima
-                window.location.href = 'denuncia_anonima.html';
-            });
-        });
-
-    </script>
+    <title>Página de Denuncias</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header-buttons">
-        <button id="consultar-denuncia-btn" class="header-button">Consultar Denuncia</button>
-        <button id="iniciar-sesion-btn" class="header-button">Iniciar Sesión</button>
+    <div class="container">
+        <header>
+            <h1>Bienvenido(a)</h1>
+        </header>
+
+        <div class="buttons">
+            <button id="consultarBtn" class="btn">Consultar</button>
+            <button id="loginBtn" class="btn">Login</button>
+            <p>Realiza tu denuncia aquí</p>
+            <button id="denunciaBtn" class="btn denuncia">Denuncia</button>
+            <p>O si prefieres, denuncia de forma anónima</p>
+            <button id="denunciaAnonimaBtn" class="btn denuncia-anonima">Denuncia Anónima</button>
+            
+            <!-- Nuevo botón de descarga APK -->
+            <a href="https://github.com/gcristian06/AppDenuncias/blob/main/AppDenuncias.apk" download="AplicacionDenuncias.apk" class="btn descarga">Descargar App</a>
+        </div>
     </div>
 
-    <div class="main-container">
-        <h1 class="hero-title">¡Bienvenido(a)!</h1>
-
-        <p class="text-gray-700 text-lg mb-4">Realiza tu denuncia registrada</p>
-        <button id="denuncia-btn" class="action-button">Denuncia aquí</button>
-
-        <p class="text-gray-700 text-lg mb-4">Realiza tu denuncia de forma anónima</p>
-        <button id="denuncia-anonima-btn" class="action-button">Denuncia Anónima</button>
-
-
-    <!-- Contenedor para el mensaje flotante (simulando alert) -->
-    <div id="message-box" class="message-box">
-        <p id="message-text"></p>
-        <button id="message-ok-button">OK</button>
-    </div>
+    <script src="script.js"></script>
 </body>
 </html>
