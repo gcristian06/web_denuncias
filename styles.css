@@ -53,13 +53,10 @@ body {
 
 /* Estilo para los botones principales */
 .buttons {
-    background-color: #e74c3c;
-    color: white;
-    text-decoration: none;
-    display: inline-block;
-    padding: 12px 20px;
-    border-radius: 5px;
-    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
 }
 
 .btn {
@@ -83,13 +80,13 @@ body {
 
 /* Botón "Denuncia Anónima" (rojo más claro o diferente tono) */
 .denuncia-anonima {
-    background-color: #e74c3c;
+    background-color: #c0392b;
     color: white;
 }
 
 /* Botón "Descargar App" (púrpura para diferenciar) */
 .descarga {
-    background-color: #e74c3c;
+    background-color: #9b59b6;
     color: white;
     text-decoration: none;
     display: inline-block;
