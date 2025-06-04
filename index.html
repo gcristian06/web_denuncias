@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub Pages + Firebase</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+    <h1>Guardar datos en Firestore</h1>
+    <input type="text" id="inputData" placeholder="Escribe algo...">
+    <button onclick="saveData()">Guardar en Firebase</button>
+    <div id="dataList"></div>
+</body>
+</html>
