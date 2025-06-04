@@ -218,7 +218,7 @@
                         estadoElement.textContent = denuncia.estado || 'No asignado';
                         estadoElement.className = getStatusClass(denuncia.estado || '');
                         
-                        document.getElementById('info-profesional').textContent = denuncia.profesional_asignado || 'No asignado';
+                        document.getElementById('info-profesional').textContent = denuncia.profesional || 'No asignado';
                         document.getElementById('info-observaciones').textContent = denuncia.observaciones || 'No hay observaciones';
                         
                         document.getElementById('resultado').style.display = 'block';
