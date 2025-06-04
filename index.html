@@ -3,34 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Denuncias ciudadanas</title>
+    <title>Consultar Denuncia</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Leaflet CSS para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .denuncia-info {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #codigoDenuncia {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #btnConsultar {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #btnConsultar:hover {
+            background-color: #cc0000;
+        }
+        #btnRegresar {
+            background-color: #cccccc;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #btnRegresar:hover {
+            background-color: #999999;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="header-buttons">
-            <button onclick="window.location.href='consultar.html'" id="consultar-denuncia-btn" class="header-button">Consultar Denuncia</button>
-            <button onclick="window.location.href='login.html'" id="iniciar-sesion-btn" class="header-button">Iniciar Sesión</button>
+        <h1>Consultar Denuncia</h1>
+        
+        <div class="search-container">
+            <input type="text" id="codigoDenuncia" placeholder="Ejemplo: denuncia123456789">
+            <button id="btnConsultar" class="btn">Buscar</button>
         </div>
         
-        <header>
-            <h1>¡Bienvenido(a)!</h1>
-        </header>
-
-        <div class="buttons">
-            <p>Realiza tu denuncia aquí</p>
-            <button onclick="window.location.href='denuncia.html'" class="btn denuncia">Denuncia aquí</button>
-            
-            <p>O si prefieres, denuncia de forma anónima</p>
-            <button onclick="window.location.href='denuncia_anonima.html'" class="btn denuncia-anonima">Denuncia aquí</button>
-            
-            <!-- Nuevo botón de descarga APK -->
-            <a href="https://drive.google.com/file/d/1o-Iaak1GZnqC59vpBEBl6XrH020bXttc/view?usp=drive_link" download class="btn descarga">Descargar APK</a>
+        <div id="resultado" style="display: none;">
+            <div class="denuncia-info">
+                <h2>Información de la Denuncia</h2>
+                <p><strong>Nombre:</strong> <span id="info-nombre"></span></p>
+                <p><strong>Apellidos:</strong> <span id="info-apellidos"></span></p>
+                <p><strong>Teléfono:</strong> <span id="info-telefono"></span></p>
+                <p><strong>Tipo de denuncia:</strong> <span id="info-tipo"></span></p>
+                <p><strong>Detalles:</strong> <span id="info-detalles"></span></p>
+                <p><strong>Fecha y hora:</strong> <span id="info-fecha"></span></p>
+                <p><strong>Ubicación:</strong> <span id="info-ubicacion"></span></p>
+                
+                <div id="map"></div>
+            </div>
         </div>
+        
+        <div id="mensaje-error" style="color: red; display: none;">
+            No se encontró ninguna denuncia con ese código.
+        </div>
+        
+        <button id="btnRegresar" class="btn">Regresar</button>
     </div>
-    
+
+    <!-- Leaflet JS para el mapa -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Configuración de Firebase (usa tu propia configuración)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            let map = null;
+            let marker = null;
+            
+            // Manejar el botón de regresar
+            document.getElementById('btnRegresar').addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            // Manejar la consulta de denuncia
+            document.getElementById('btnConsultar').addEventListener('click', function() {
+                const codigo = document.getElementById('codigoDenuncia').value.trim();
+                
+                if (!codigo) {
+                    alert('Por favor ingresa un código de denuncia');
+                    return;
+                }
+                
+                const denunciaRef = database.ref('denuncias/' + codigo);
+                
+                denunciaRef.once('value').then((snapshot) => {
+                    const denuncia = snapshot.val();
+                    
+                    if (denuncia) {
+                        // Mostrar información
+                        document.getElementById('info-nombre').textContent = denuncia.nombre;
+                        document.getElementById('info-apellidos').textContent = `${denuncia.apellido_paterno} ${denuncia.apellido_materno}`;
+                        document.getElementById('info-telefono').textContent = denuncia.telefono;
+                        document.getElementById('info-tipo').textContent = denuncia.tipo;
+                        document.getElementById('info-detalles').textContent = denuncia.detalles;
+                        document.getElementById('info-fecha').textContent = denuncia.dateTime;
+                        document.getElementById('info-ubicacion').textContent = denuncia.ubicacion;
+                        
+                        // Mostrar el mapa si hay ubicación
+                        if (denuncia.latitud !== "No disponible" && denuncia.longitud !== "No disponible") {
+                            if (!map) {
+                                map = L.map('map').setView([denuncia.latitud, denuncia.longitud], 15);
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                }).addTo(map);
+                            } else {
+                                map.setView([denuncia.latitud, denuncia.longitud], 15);
+                            }
+                            
+                            if (marker) {
+                                map.removeLayer(marker);
+                            }
+                            
+                            marker = L.marker([denuncia.latitud, denuncia.longitud]).addTo(map)
+                                .bindPopup('Ubicación de la denuncia');
+                        }
+                        
+                        document.getElementById('resultado').style.display = 'block';
+                        document.getElementById('mensaje-error').style.display = 'none';
+                    } else {
+                        document.getElementById('resultado').style.display = 'none';
+                        document.getElementById('mensaje-error').style.display = 'block';
+                    }
+                }).catch((error) => {
+                    console.error('Error al consultar denuncia:', error);
+                    alert('Ocurrió un error al consultar la denuncia');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-
