@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const denunciasRef = database.ref('denuncias/' + denunciaId);
         denunciasRef.set(denunciaData)
             .then(() => {
-                alert('Denuncia enviada correctamente');
+                alert(`Denuncia enviada correctamente. Si deseas consultar tu denuncia usa este código: ${denunciaId}`);
                 document.getElementById('denunciaForm').reset();
             })
             .catch((error) => {
