@@ -59,10 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Subir datos a Firebase
         const denunciasRef = database.ref('denuncias/' + denunciaId);
         denunciasRef.set(denunciaData)
-            .then(() => {
-                alert('Denuncia enviada correctamente');
-                document.getElementById('denunciaForm').reset();
-            })
+        .then(() => {
+            alert(`Denuncia enviada correctamente. Si deseas consultar tu denuncia usa este código: ${denunciaId}`);
+            document.getElementById('denunciaForm').reset();
+        })
             .catch((error) => {
                 console.error('Error al enviar denuncia: ', error);
                 alert('Ocurrió un error al enviar la denuncia');
