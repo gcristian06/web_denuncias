@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento de Denuncia - App Denuncias</title>
+    <!-- Carga de Tailwind CSS para estilos modernos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para la fuente Inter y el cuerpo de la página */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Un gris claro para el fondo */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alineado al inicio para permitir scroll */
+            min-height: 100vh; /* Asegura que ocupe al menos toda la altura de la ventana */
+            margin: 0;
+            padding: 1rem; /* Espacio alrededor del contenedor principal */
+            box-sizing: border-box; /* Incluye padding en el ancho/alto */
+        }
+        .container {
+            background-color: white;
+            border-radius: 1rem; /* Esquinas redondeadas */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            padding: 2rem;
+            width: 100%;
+            max-width: 700px; /* Ancho máximo para la interfaz */
+            text-align: center;
+            margin-top: 2rem; /* Margen superior para centrar verticalmente si hay poco contenido */
+            margin-bottom: 2rem; /* Margen inferior para permitir scroll */
+        }
+        .header-title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 1.5rem;
+        }
+        .search-section {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .search-input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        .search-button {
+            background-color: #ef4444; /* Rojo */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .search-button:hover {
+            background-color: #dc2626; /* Rojo más oscuro */
+        }
+        .data-section {
+            background-color: #f3f4f6; /* Gris muy claro */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .data-label {
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* gray-700 */
+            margin-bottom: 0.5rem;
+        }
+        .data-value {
+            color: #4b5563; /* gray-600 */
+            margin-bottom: 1rem;
+            word-wrap: break-word; /* Permite que el texto largo se rompa */
+        }
+        .input-field, .select-field, .textarea-field {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        .textarea-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .button-primary {
+            background-color: #ef4444; /* Rojo para Actualizar */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .button-primary:hover {
+            background-color: #dc2626;
+        }
+        .button-secondary {
+            background-color: #6b7280; /* Gris para Pre-registro */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .button-secondary:hover {
+            background-color: #4b5563;
+        }
+        /* Nuevo estilo para el botón gris, si no está ya en Tailwind */
+        .button-gray {
+            background-color: #9ca3af; /* Un gris neutro */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .button-gray:hover {
+            background-color: #6b7280; /* Gris más oscuro al pasar el ratón */
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            z-index: 1000;
+            display: none; /* Oculto por defecto */
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        .message-box.show {
+            display: block;
+        }
+        .message-box button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .message-box button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+    <!-- Firebase SDKs for Realtime Database and Auth -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, get, set, update, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // Variables globales de Firebase (proporcionadas por el entorno Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db; // Ahora será la instancia de Realtime Database
+        let auth;
+        let userId = 'anonymous'; // Default to anonymous
+        let isAuthReady = false;
+
+        // Función para mostrar un mensaje emergente (modal)
+        window.showMessageBox = function(message) {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const messageOkButton = document.getElementById('message-ok-button');
+
+            messageText.textContent = message;
+            messageBox.classList.add('show');
+
+            messageOkButton.onclick = () => {
+                messageBox.classList.remove('show');
+            };
+        };
+
+        // Función para deshabilitar las interacciones de la aplicación
+        function disableAppInteractions() {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            document.querySelectorAll('input').forEach(input => input.disabled = true);
+            document.querySelectorAll('select').forEach(select => select.disabled = true);
+            document.querySelectorAll('textarea').forEach(textarea => textarea.disabled = true);
+        }
+
+        // Initialize Firebase and set up authentication
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getDatabase(app); // Inicializar Realtime Database
+
+                // Sign in with custom token if available, otherwise anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Listen for auth state changes
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase: User signed in:", userId);
+                    } else {
+                        userId = crypto.randomUUID(); // Use a random ID for unauthenticated users
+                        console.log("Firebase: User signed out or anonymous:", userId);
+                    }
+                    isAuthReady = true;
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                window.showMessageBox("Error al inicializar Firebase. Consulta la consola para más detalles.");
+                disableAppInteractions();
+            }
+        }
+
+        // Hacer que las instancias y funciones de Firebase estén disponibles globalmente para otros scripts
+        window.db = db;
+        window.auth = auth;
+        window.userId = userId;
+        window.isAuthReady = isAuthReady;
+        window.getDatabase = getDatabase;
+        window.ref = ref;
+        window.get = get;
+        window.set = set;
+        window.update = update;
+        window.child = child;
+
+        // Inicializar Firebase cuando la página se carga
+        window.onload = initFirebase;
+
+        // Referencias a elementos del DOM
+        const inputIdDenuncia = document.getElementById('input-id-denuncia');
+        const btnBuscar = document.getElementById('btn-buscar');
+        const btnActualizar = document.getElementById('btn-actualizar');
+        const btnPreRegistro = document.getElementById('btn-pre-registro');
+        const btnVolverInicio = document.getElementById('btn-volver-inicio');
+
+        const displayDatetime = document.getElementById('display-datetime');
+        const displayUbicacion = document.getElementById('display-ubicacion');
+        const displayNombre = document.getElementById('display-nombre');
+        const displayTelefono = document.getElementById('display-telefono');
+        const displayTipo = document.getElementById('display-tipo');
+        const displayDetalles = document.getElementById('display-detalles');
+        const displayImagen = document.getElementById('display-imagen');
+
+        const selectEstado = document.getElementById('select-estado');
+        const selectProfesional = document.getElementById('select-profesional');
+        const textareaObservaciones = document.getElementById('textarea-observaciones');
+
+        let currentDenunciaRef = null; // Para almacenar la referencia al nodo de la denuncia actual en Realtime DB
+
+        // Función para limpiar los campos de visualización y edición
+        function clearDenunciaFields() {
+            displayDatetime.textContent = '---';
+            displayUbicacion.textContent = '---';
+            displayNombre.textContent = '---';
+            displayTelefono.textContent = '---';
+            displayTipo.textContent = '---';
+            displayDetalles.textContent = '---';
+            displayImagen.src = '#';
+            displayImagen.classList.add('hidden');
+
+            selectEstado.value = '';
+            selectProfesional.value = '';
+            textareaObservaciones.value = '';
+            currentDenunciaRef = null;
+        }
+
+        // Cuando boton_buscar.Clic
+        btnBuscar.addEventListener('click', async () => {
+            if (!window.isAuthReady || !window.db) {
+                window.showMessageBox("La aplicación no está lista o la base de datos no está inicializada.");
+                return;
+            }
+
+            const idDenuncia = inputIdDenuncia.value.trim();
+            if (idDenuncia === '') {
+                window.showMessageBox("Por favor, introduce el ID de la denuncia a buscar.");
+                return;
+            }
+
+            clearDenunciaFields(); // Limpiar campos antes de buscar
+
+            try {
+                let denunciaData = null;
+                let foundPath = null;
+
+                // Intentar buscar en 'denuncias'
+                const denunciaPath = `denuncias/${idDenuncia}`;
+                const denunciaSnapshot = await window.get(window.ref(window.db, denunciaPath));
+
+                if (denunciaSnapshot.exists()) {
+                    denunciaData = denunciaSnapshot.val();
+                    foundPath = denunciaPath;
+                    console.log("Denuncia encontrada en /denuncias:", denunciaData);
+                } else {
+                    // Si no se encuentra en 'denuncias', intentar buscar en 'denuncias_anonimas'
+                    const denunciaAnonimaPath = `denuncias_anonimas/${idDenuncia}`;
+                    const denunciaAnonimaSnapshot = await window.get(window.ref(window.db, denunciaAnonimaPath));
+                    if (denunciaAnonimaSnapshot.exists()) {
+                        denunciaData = denunciaAnonimaSnapshot.val();
+                        foundPath = denunciaAnonimaPath;
+                        console.log("Denuncia encontrada en /denuncias_anonimas:", denunciaData);
+                    }
+                }
+
+                if (denunciaData) {
+                    currentDenunciaRef = window.ref(window.db, foundPath); // Guardar la referencia completa
+                    displayDatetime.textContent = denunciaData.dateTime || 'N/A';
+                    displayUbicacion.textContent = denunciaData.ubicacion || 'N/A';
+                    displayNombre.textContent = denunciaData.nombre || 'Anónimo'; // Si no hay nombre, es anónima
+                    displayTelefono.textContent = denunciaData.telefono || 'N/A';
+                    displayTipo.textContent = denunciaData.tipo || 'N/A';
+                    displayDetalles.textContent = denunciaData.detalles || 'N/A';
+                    if (denunciaData.imagen) { // Usar 'imagen' en lugar de 'imagenBase64'
+                        displayImagen.src = denunciaData.imagen;
+                        displayImagen.classList.remove('hidden');
+                    } else {
+                        displayImagen.classList.add('hidden');
+                    }
+                    // Cargar estado, profesional y observaciones si existen
+                    selectEstado.value = denunciaData.estado || '';
+                    selectProfesional.value = denunciaData.profesional || '';
+                    textareaObservaciones.value = denunciaData.observaciones || '';
+                } else {
+                    window.showMessageBox("No se encontró ninguna denuncia con ese ID.");
+                    clearDenunciaFields();
+                }
+
+            } catch (error) {
+                console.error("Error al buscar denuncia:", error);
+                window.showMessageBox("Error al buscar la denuncia. Por favor, inténtalo de nuevo.");
+                clearDenunciaFields();
+            }
+        });
+
+        // Cuando boton_actualizar.Clic
+        btnActualizar.addEventListener('click', async () => {
+            if (!window.isAuthReady || !window.db) {
+                window.showMessageBox("La aplicación no está lista o la base de datos no está inicializada.");
+                return;
+            }
+
+            if (!currentDenunciaRef) {
+                window.showMessageBox("Por favor, busca una denuncia primero para poder actualizarla.");
+                return;
+            }
+
+            const estado = selectEstado.value;
+            const profesional = selectProfesional.value;
+            const observaciones = textareaObservaciones.value.trim();
+
+            // Validar que al menos un campo de seguimiento se haya modificado
+            if (!estado && !profesional && !observaciones) {
+                window.showMessageBox("No hay cambios para actualizar. Por favor, selecciona un estado, asigna un profesional o añade observaciones.");
+                return;
+            }
+
+            try {
+                // Actualizar el nodo en Realtime Database
+                // Usamos 'update' para actualizar solo los campos especificados
+                await window.update(currentDenunciaRef, {
+                    estado: estado,
+                    profesional: profesional,
+                    observaciones: observaciones,
+                    lastUpdated: new Date().toISOString() // Opcional: añadir un timestamp de última actualización
+                });
+
+                window.showMessageBox("Denuncia actualizada con éxito.");
+                console.log("Denuncia actualizada en Realtime Database.");
+                // Opcional: Limpiar las observaciones después de actualizar si es un campo de "añadir"
+                // textareaObservaciones.value = '';
+
+            } catch (error) {
+                console.error("Error al actualizar la denuncia:", error);
+                window.showMessageBox("Error al actualizar la denuncia. Por favor, inténtalo de nuevo.");
+            }
+        });
+
+        // Cuando boton_pre_registro.Clic
+        btnPreRegistro.addEventListener('click', () => {
+            window.showMessageBox("Funcionalidad de Pre-registro aún no implementada. Redirigiendo a la pantalla principal.");
+            window.location.href = 'index.html'; // O a la pantalla de pre-registro si existe
+        });
+
+        // Cuando boton_volver_inicio.Clic (simulando boton_cancelar de App Inventor)
+        btnVolverInicio.addEventListener('click', () => {
+            window.location.href = 'index.html'; // Asumiendo que Screen1 es index.html
+        });
+    </script>
+</body>
+</html>
